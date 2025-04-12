@@ -42,6 +42,28 @@ app.post(
   },
 );
 
+app.post("/auth/login", async (req, res) => {
+  try {
+    //1. Read the identifier and the password from the client
+    const { identifier, password } = req.body;
+    //2. Get the record where emailAddress or username matches the identifier
+    const user = await client.user.findFirst({
+      where: {
+        OR: [{ emailAddress: identifier }, { userName: identifier }],
+      },
+    });
+    console.log(user);
+    //3. If the record doesn't exist, wrong login credentials
+    //4. if the record exist, compare the password with the stored hash password
+    //5. If the password don't math, wrong login credentials.
+    //6. if they match, save important info into a json web token and ssend the json web token to the client
+  } catch (e) {
+    res.status(500).json({
+      message: "something went wrong",
+    });
+  }
+});
+
 const port = process.env.PORT || 4000;
 
 app.listen("4000", () => {
