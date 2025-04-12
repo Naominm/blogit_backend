@@ -1,5 +1,6 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import validateEmailAndUsername from "./middlewares/validateEmailAndUsername.js";
@@ -11,6 +12,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
+    credentials:(true)
   }),
 );
 
@@ -53,10 +55,30 @@ app.post("/auth/login", async (req, res) => {
       },
     });
     console.log(user);
-    //3. If the record doesn't exist, wrong login credentials
+    //3. If the record doesn't exist, wrong login 
+    if(!user){
+      return res.status(401).json({message:"wrong login credentials"})
+    }
     //4. if the record exist, compare the password with the stored hash password
+   const isMatch= await bcrypt.compare(password,user.password)
+   console.log(isMatch)
     //5. If the password don't math, wrong login credentials.
-    //6. if they match, save important info into a json web token and ssend the json web token to the client
+    if(!isMatch){
+      return res.status(401).json({message:"wrong login credentials"})
+    }
+    //6. if they match, save important info into a json web token and send the json web token to the client
+    const jwtPayload={
+      id:user.id,
+      firstName:user.firstName,
+      lastName:user.lastName
+    }
+  const token=  jwt.sign(jwtPayload,process.env.JWT_SECRET_KEY,)
+  res.status(200).cookie("blogitAuthToken",token,{}).json({
+    firstName:user.firstName,
+    lastName:user.lastName,
+    emailAddress:user.emailAddress,
+    userName:user.userName
+  })
   } catch (e) {
     res.status(500).json({
       message: "something went wrong",
