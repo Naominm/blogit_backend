@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
-import validateEmailAndUsername from "./middlewares/validateEmailAndUsername.js";
-import checkPasswordStrength from "./middlewares/checkPasswordStrength.js";
-import { register, login } from "./controllers/authController.js";
+import authRouter from "./routes/authRoutes.js";
 
 const app = express();
 app.use(express.json());
@@ -14,13 +12,7 @@ app.use(
   }),
 );
 
-app.post(
-  "/auth/register",
-  [validateEmailAndUsername, checkPasswordStrength],
-  register,
-);
-
-app.post("/auth/login", login);
+app.use("/auth", authRouter);
 
 const port = process.env.PORT || 4000;
 
