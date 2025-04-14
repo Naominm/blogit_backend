@@ -1,17 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const client =new PrismaClient();
+
 
 async function validateEmailAndUsername(req, res, next) {
   const { emailAddress, userName } = req.body;
   try {
-    const userWithEmail = await prisma.user.findFirst({
+    const userWithEmail = await client.user.findFirst({
       where: { email_address: emailAddress }
+
     });
     if (userWithEmail) {
-      return res.status(400).json({ message: "Email address already taken" });
+      return res.status(400).json({ message: "EmailAddress already taken" });
     }
-    const userWithUsername = await prisma.user.findFirst({
+    const userWithUsername = await client.user.findFirst({
       where: { username: userName }
     });
     if (userWithUsername) {
@@ -20,10 +22,9 @@ async function validateEmailAndUsername(req, res, next) {
     next();
   } catch (e) {
     console.error('Prisma error:', e);
-    return res.status(500).json({ 
-      message: "Validation error",
-      error: process.env.NODE_ENV === "development" ? e.message : undefined
-    });
+    return res
+      .status(500)
+      .json({ message: "Error validating username and email" });
   }
 }
 
