@@ -15,7 +15,7 @@ app.use(
 app.use("/auth", authRouter);
 
 app.get("/", (req, res) => {
-  console.log("Root route hit!");
+  console.log("Root route accessed!");
   res.send("API is running");
 });
 
