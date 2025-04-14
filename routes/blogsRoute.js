@@ -3,6 +3,6 @@ import { createBlog } from "../controllers/blogsController";
 
 const router = Router();
 
-router.route("/blogs").post(createBlog);
+router.route("/").post(createBlog);
 
 export default router;
