@@ -7,7 +7,7 @@ const router = Router();
 
 router
   .route("/register")
-  .post([validateEmailAndUsername, checkPasswordStrength], register);
+  .post( register);
 
 router.route("/login").post(login);
 
