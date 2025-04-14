@@ -5,13 +5,13 @@ async function validateEmailAndUsername(req, res, next) {
   const { emailAddress, userName } = req.body;
   try {
     const userWithEmail = await client.user.findFirst({
-      where: { emailAddress },
+      where: { email_address: emailAddress },
     });
     if (userWithEmail) {
       return res.status(400).json({ message: "EmailAddress already taken" });
     }
     const userWithUsername = await client.user.findFirst({
-      where: { userName },
+      where: { username: userName },
     });
     if (userWithUsername) {
       return res.status(400).json({ message: "Username already taken" });
