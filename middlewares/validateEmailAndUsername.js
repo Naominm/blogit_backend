@@ -18,6 +18,7 @@ async function validateEmailAndUsername(req, res, next) {
     }
     next();
   } catch (e) {
+    console.error('Prisma error:', e);
     return res
       .status(500)
       .json({ message: "Error validating username and email" });
