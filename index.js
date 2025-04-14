@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://blog-it-git-master-naomi-mbuguas-projects.vercel.app/login",
+    origin: "https://blog-it-git-master-naomi-mbuguas-projects.vercel.app",
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     credentials: true,
   }),
