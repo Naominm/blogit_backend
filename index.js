@@ -12,11 +12,17 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://blog-it-git-master-naomi-mbuguas-projects.vercel.app",
+    origin: "http://localhost:5173",
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     credentials: true,
   }),
 );
+//   cors({
+//     origin: "https://blog-it-git-master-naomi-mbuguas-projects.vercel.app",
+//     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
+//     credentials: true,
+//   }),
+// );
 
 app.use("/auth", authRouter);
 app.use("/blogs", blogsRouter);

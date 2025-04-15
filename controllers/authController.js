@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
+dotenv.config();
 
 const client = new PrismaClient();
 
@@ -52,12 +54,18 @@ export const login = async (req, res) => {
       lastName: user.lastName,
     };
     const token = jwt.sign(jwtPayload, process.env.JWT_SECRET_KEY);
-    res.status(200).cookie("blogitAuthToken", token, {}).json({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      emailAddress: user.emailAddress,
-      userName: user.userName,
-    });
+
+    res
+      .status(200)
+      .cookie("blogitAuthToken", token, {
+        secure: false,
+      })
+      .json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailAddress: user.emailAddress,
+        userName: user.userName,
+      });
   } catch (e) {
     res.status(500).json({
       message: "something went wrong one",
