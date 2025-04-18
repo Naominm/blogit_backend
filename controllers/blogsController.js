@@ -4,7 +4,7 @@ const client = new PrismaClient();
 
 export const createBlog = async (req, res) => {
   try {
-    const { title, excerpt, content,imageUrl  } = req.body;
+    const { title, excerpt, content, imageUrl } = req.body;
     const authorID = req.user.id;
     const newBlog = await client.blog.create({
       data: {
@@ -12,12 +12,13 @@ export const createBlog = async (req, res) => {
         excerpt,
         content,
         authorID,
-        imageUrl
+        imageUrl,
       },
     });
     console.log(newBlog);
-    res.status(201).json({ blog: newBlog, message: "New blog created successfully" });
-
+    res
+      .status(201)
+      .json({ blog: newBlog, message: "New blog created successfully" });
   } catch (e) {
     console.log(e);
     res.status(500).json({
@@ -36,10 +37,10 @@ export const getBlog = async (req, res) => {
         id: blogId,
         isDeleted: false,
       },
-      include:{author:true},
+      include: { author: true },
     });
     if (blog) {
-      console.log("Blog Found" , blog)
+      console.log("Blog Found", blog);
       return res.status(200).json(blog);
     }
     res.status(404).json({ message: "Entry not found" });
@@ -47,7 +48,6 @@ export const getBlog = async (req, res) => {
     res.status(500).json({ message: "something went wrong" });
   }
 };
-
 
 export const getBlogs = async (req, res) => {
   try {
@@ -57,7 +57,7 @@ export const getBlogs = async (req, res) => {
         authorID,
         isDeleted: false,
       },
-      include: { author: true }, 
+      include: { author: true },
     });
     if (blogs.length > 0) {
       console.log("Blogs Found", blogs);
@@ -68,68 +68,73 @@ export const getBlogs = async (req, res) => {
   } catch (e) {
     res.status(500).json({ message: "Something went wrong" });
   }
-  }
+};
 
-  export const updateBlog = async (req, res) => {
-    try {
-      const { blogId } = req.params;
-      const { title, excerpt, content,imageUrl } = req.body;
-      const authorID = req.user.id;
-  
-      const blog = await client.blog.findFirst({
-        where: {
-          id: blogId,
-          authorID,
-          isDeleted: false,
-        },
-      });
-  
-      if (!blog) {
-        return res.status(404).json({ message: "Blog not found" });
-      }
-  
-      const updatedBlog = await client.blog.update({
-        where: { id: blogId },
-        data: {
-          title: title || blog.title,  
-          excerpt: excerpt || blog.excerpt,
-          content: content || blog.content,
-          imageUrl: imageUrl || blog.imageUrl, 
-        },
-      });
-  
-      return res.status(200).json({ blog: updatedBlog, message: "Blog updated successfully" });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ message: "Something went wrong" });
+export const updateBlog = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const { title, excerpt, content, imageUrl } = req.body;
+    const authorID = req.user.id;
+
+    const blog = await client.blog.findFirst({
+      where: {
+        id: blogId,
+        authorID,
+        isDeleted: false,
+      },
+    });
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
     }
-  };
-  export const deleteBlog = async (req, res) => {
-    try {
-      const { blogId } = req.params;
-      const authorID = req.user.id;
-  
-      const blog = await client.blog.findFirst({
-        where: {
-          id: blogId,
-          authorID,
-          isDeleted: false, 
-        },
-      });
-  
-      if (!blog) {
-        return res.status(404).json({ message: "Blog not found or already deleted" });
-      }
-  
-      const deletedBlog = await client.blog.update({
-        where: { id: blogId },
-        data: { isDeleted: true },
-      });
-  
-      return res.status(200).json({ message: "Blog deleted successfully", blog: deletedBlog });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ message: "Something went wrong" });
+
+    const updatedBlog = await client.blog.update({
+      where: { id: blogId },
+      data: {
+        title: title || blog.title,
+        excerpt: excerpt || blog.excerpt,
+        content: content || blog.content,
+        imageUrl: imageUrl || blog.imageUrl,
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ blog: updatedBlog, message: "Blog updated successfully" });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+export const deleteBlog = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const authorID = req.user.id;
+
+    const blog = await client.blog.findFirst({
+      where: {
+        id: blogId,
+        authorID,
+        isDeleted: false,
+      },
+    });
+
+    if (!blog) {
+      return res
+        .status(404)
+        .json({ message: "Blog not found or already deleted" });
     }
-  };
-  
+
+    const deletedBlog = await client.blog.update({
+      where: { id: blogId },
+      data: { isDeleted: true },
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Blog deleted successfully", blog: deletedBlog });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};

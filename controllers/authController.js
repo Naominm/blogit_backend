@@ -63,7 +63,6 @@ export const login = async (req, res) => {
         // secure:true,
         // httpOnly:true,
         // sameSite:"None"
-        
       })
       .json({
         token,

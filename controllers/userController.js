@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +21,6 @@ export const createOrUpdateUserProfile = async (req, res) => {
         },
       });
     } else {
-
       profile = await prisma.profile.update({
         where: { userId: req.userId },
         data: { phoneNumber, occupation, bio, secondaryEmail },
@@ -33,5 +31,32 @@ export const createOrUpdateUserProfile = async (req, res) => {
   } catch (error) {
     console.error("POST or UPDATE profile error:", error);
     res.status(500).json({ message: "Failed to update or create profile" });
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      id: user.id,
+      emailAddress: user.emailAddress,
+      userName: user.userName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      profile: user.profile || {},
+    });
+  } catch (error) {
+    console.error("GET profile error:", error);
+    res.status(500).json({ message: "Failed to fetch user profile" });
   }
 };
