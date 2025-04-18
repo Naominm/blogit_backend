@@ -60,9 +60,9 @@ export const login = async (req, res) => {
       .cookie("blogitAuthToken", token, {
         secure: false,
         sameSite: "None",
-        // secure:true,
-        // httpOnly:true,
-        // sameSite:"None"
+        secure:true,
+        httpOnly:true,
+        sameSite:"None"
       })
       .json({
         token,
