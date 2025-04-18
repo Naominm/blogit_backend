@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -113,5 +114,49 @@ export const updateUserAccountInfo = async (req, res) => {
   } catch (error) {
     console.error("UPDATE personal info error:", error);
     res.status(500).json({ message: "Failed to update personal information" });
+  }
+};
+
+export const updateUserPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Both current and new passwords are required." });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ message: "Current password is incorrect." });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: req.userId },
+      data: {
+        password: hashedNewPassword,
+      },
+    });
+
+    res.json({ message: "Password updated successfully." });
+  } catch (error) {
+    console.error("UPDATE password error:", error);
+    res.status(500).json({ message: "Failed to update password." });
   }
 };
