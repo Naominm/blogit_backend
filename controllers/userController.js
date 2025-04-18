@@ -60,3 +60,58 @@ export const getUserProfile = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch user profile" });
   }
 };
+
+export const updateUserAccountInfo = async (req, res) => {
+  try {
+    const { firstName, lastName, emailAddress, userName } = req.body;
+    if (!firstName || !lastName || !emailAddress || !userName) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const existingEmail = await prisma.user.findFirst({
+      where: {
+        emailAddress,
+        NOT: { id: req.userId },
+      },
+    });
+
+    if (existingEmail) {
+      return res.status(409).json({ message: "Email address already in use." });
+    }
+
+    const existingUsername = await prisma.user.findFirst({
+      where: {
+        userName,
+        NOT: { id: req.userId },
+      },
+    });
+
+    if (existingUsername) {
+      return res.status(409).json({ message: "Username already in use." });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.userId },
+      data: {
+        firstName,
+        lastName,
+        emailAddress,
+        userName,
+      },
+    });
+
+    res.json({
+      message: "Personal information updated successfully",
+      user: {
+        id: updatedUser.id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        emailAddress: updatedUser.emailAddress,
+        userName: updatedUser.userName,
+      },
+    });
+  } catch (error) {
+    console.error("UPDATE personal info error:", error);
+    res.status(500).json({ message: "Failed to update personal information" });
+  }
+};
