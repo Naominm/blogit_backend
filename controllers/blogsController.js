@@ -4,7 +4,7 @@ const client = new PrismaClient();
 
 export const createBlog = async (req, res) => {
   try {
-    const { title, excerpt, content } = req.body;
+    const { title, excerpt, content,imageUrl  } = req.body;
     const authorID = req.user.id;
     const newBlog = await client.blog.create({
       data: {
@@ -12,6 +12,7 @@ export const createBlog = async (req, res) => {
         excerpt,
         content,
         authorID,
+        imageUrl
       },
     });
     console.log(newBlog);
@@ -72,7 +73,7 @@ export const getBlogs = async (req, res) => {
   export const updateBlog = async (req, res) => {
     try {
       const { blogId } = req.params;
-      const { title, excerpt, content } = req.body;
+      const { title, excerpt, content,imageUrl } = req.body;
       const authorID = req.user.id;
   
       const blog = await client.blog.findFirst({
@@ -93,6 +94,7 @@ export const getBlogs = async (req, res) => {
           title: title || blog.title,  
           excerpt: excerpt || blog.excerpt,
           content: content || blog.content,
+          imageUrl: imageUrl || blog.imageUrl, 
         },
       });
   

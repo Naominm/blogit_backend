@@ -11,4 +11,5 @@ router.route("/:blogId").delete(verifyUser, deleteBlog);
 router.route("/:blogId").patch(verifyUser, updateBlog);
 
 
+
 export default router;

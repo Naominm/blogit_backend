@@ -19,12 +19,27 @@ model User {
   isDeleted     Boolean  @default(false) @map("is_deleted")
   isDeactivated Boolean  @default(false) @map("is_deactivated")
   blogs         Blog[]
+  profile       Profile?
 
   @@map("users")
 }
 
+model Profile {
+  id             String  @id @default(uuid())
+  bio            String?
+  avatarUrl      String? @map("avatar_url")
+  secondaryEmail String? @map("secondary_email")
+  phoneNumber    String? @map("phone_number")
+  occupation     String?
+  userId         String  @unique
+  user           User    @relation(fields: [userId], references: [id])
+
+  @@map("profile")
+}
+
 model Blog {
   id        String   @id @default(uuid())
+  imageUrl  String?  @map("image_url")
   title     String   @map("blog_title")
   excerpt   String   @map("blog_excerpt")
   content   String   @map("blog_content")
